@@ -2,6 +2,15 @@
 
 ### Overview
 
+URL shorteners work by a server performing a redirect from (ex.) http://short.ly/shortId to a longer URL stored in a database.  
+
+Features:
+  - Custom shortlinks (ex short.ly/custom instead of short.ly/123asd)
+  - Logging of hits, including user ip / referrer
+  - GUI for internal creation of shortlinks, and browsing of stats
+  - RESTful API allows for programmatic creation of shortlinks
+  - Seperation of database from webserver
+
 This URL shortener consists of two node servers:
   - **Shortener-API**, which is an API for adding, removing, and viewing shortlinks.  Shortener-API also provides a GUI.
   - **Shortener-WEB**, which actually performs the shortlink redirect by calling Shortener-API.
