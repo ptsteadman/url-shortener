@@ -2,9 +2,12 @@
 
 ### Overview
 
-This URL shortener consists of two parts:
- - Shortener-API, which is an API for adding, removing, and viewing shortlinks
- - Shortener-WEB, which actually performs the shortlink redirect, and calls Shortener-API
+A shortlink from http://short.com/foo could redirect a visitor to http://example.com/someverylongdomainname?querystring.  This project creates a shortlink service with node.js and mysql.
+
+This URL shortener consists of two node servers:
+  - Shortener-API, which is an API for adding, removing, and viewing shortlinks.  Shortener-API also provides a GUI.
+  - Shortener-WEB, which actually performs the shortlink redirect by calling Shortener-API.
+
 
          +----------------------+               +----------------+
          |SHORTENER-API         |               |SHORTENER-WEB   |
@@ -27,28 +30,6 @@ This URL shortener consists of two parts:
           |                   |                         |
           +-------------------+                        / \
             -----------------
- 
-## config.js Configuration
-
-**shorty-web**
-
-The public-facing component of the URL shortener service.
-Calls the shorty-api API to get the proper redirect link.
-Host and port of the shorty-api API can be edited in config.js.
-
-**shorty-api**
-
-API and internal UI component of the shorty URL shortener.   
-
-## Database Setup
-
-Install MySql, and start a mysql shell using sudo in the shorty-api directory.
-Create a database called "shortener" with the command "CREATE DATABASE shortener".
-(A different database name can be used by modifying 'mysqlDB' in shortener-api's config.js).
-Finally, use the command "SOURCE links.sql" to create the proper tables in MySQL.
-(To view the schema of these tables, you can view the links.sql file). 
-
-
 ## Database Setup
 
 - Install MySql, and start a mysql shell using sudo in the shorty-api directory.
@@ -56,6 +37,34 @@ Finally, use the command "SOURCE links.sql" to create the proper tables in MySQL
   (A different database name can be used by modifying 'mysqlDB' in shortener-api's config.js).
 - Finally, use the command "SOURCE links.sql" to create the proper tables in MySQL.
   (To view the schema of the tables being created, you can view the links.sql file). 
+
+## Configuration and Startup
+
+The two node servers, Shortener-API and Shortener-WEB, are configured in the config.js files in each directory.
+
+**Shortener-API config.js**
+
+    exports.config = {
+            mysqlHost: "localhost",
+            mysqlPort: "3306",
+            mysqlUser: "root",
+            mysqlPassword: "",
+            mysqlDB: "shortener",
+
+            domain: 'http://localhost:3001',  //  domain and port where the shortener-api is running
+            redirectDomain: 'http://localhost:3002'  // (ex. bit.ly/) public facing domain where shortener-web is running
+    } 
+
+**Shortener-WEB config.js**
+
+    exports.config = {
+      host: "localhost",  // the domain where the shorterner-api is running
+      port: "3001",  // the port where the shortener-api is running
+      path: "/v1/shortlink/",  // api root (should not need to change)
+      errorRedirect: "http://www.google.com" // where the user is sent if a shortlink isn't found
+    }
+
+To use the shortener, start both shortner-API and shortener-WEB with "node app.js" in each directory.  By default, shortener-API runs on http://localhost:3001 and shortener-WEB runs on http://localhost:3002.  This means that shortlinks will be in the form http://localhost:3002/shortId, and the GUI can be accessed from the browser at http://localhost:3001
 
 ## Shortener-API Methods
 
