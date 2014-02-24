@@ -1,0 +1,10 @@
+{
+  "endpoints": [
+    "GET    /v1/shortlink",
+    "GET    /v1/shortlink/:shortId",
+    "GET    /v1/shortlink/:shortId/hits",
+    "POST   /v1/shortlink",
+    "POST   /v1/shortlink/:shortId/hits",
+    "DELETE /v1/shortlink/:shortId"
+  ]
+}

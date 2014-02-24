@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Shorty API</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="../docs/media/css/restdown.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+</head>
+<body>
+<div id="header">
+    <h1>Shorty API Documentation</h1>
+</div>
+
+    <div id="sidebar">
+<ul>
+  <li><div><a href="#shortlink">Shortlink</a></div>
+  <ul>
+    <li><div><a href="#GET-/v1/shortlink"><span class="method justendpoint"><span class="endpoint"><span class="verb">GET</span> <span class="path">/v1/shortlink</span></span></a></div></li>
+    <li><div><a href="#GET-/v1/shortlink/:shortId"><span class="method justendpoint"><span class="endpoint"><span class="verb">GET</span> <span class="path">/v1/shortlink/:shortId</span></span></a></div></li>
+    <li><div><a href="#GET-/v1/shortlink/:shortId/hits"><span class="method justendpoint"><span class="endpoint"><span class="verb">GET</span> <span class="path">/v1/shortlink/:shortId/hits</span></span></a></div></li>
+    <li><div><a href="#POST-/v1/shortlink"><span class="method justendpoint"><span class="endpoint"><span class="verb">POST</span> <span class="path">/v1/shortlink</span></span></a></div></li>
+    <li><div><a href="#POST-/v1/shortlink/:shortId/hits"><span class="method justendpoint"><span class="endpoint"><span class="verb">POST</span> <span class="path">/v1/shortlink/:shortId/hits</span></span></a></div></li>
+    <li><div><a href="#DELETE-/v1/shortlink/:shortId"><span class="method justendpoint"><span class="endpoint"><span class="verb">DELETE</span> <span class="path">/v1/shortlink/:shortId</span></span></a></div></li>
+  </ul></li>
+</ul>
+
+    </div>
+    <div id="content">
+
+<h1>Shorty URL Shortener Overview</h1>
+<div class="intro">
+
+
+<p><strong>shorty-web</strong></p>
+
+<p>The public-facing component of the pcln.co URL shortener service.
+Calls the shorty-api API to get the proper redirect link.
+Host and port of the shorty-api API can be edited in config.js.</p>
+
+<p><strong>shorty-api</strong></p>
+
+<p>API and internal UI component of the shorty URL shortener.   </p>
+
+
+</div>
+<h1 id="shortlink">Shortlink</h1>
+
+<h2 id="GET-/v1/shortlink"><span class="method justendpoint"><span class="endpoint"><span class="verb">GET</span> <span class="path">/v1/shortlink</span></span></h2>
+
+<p>Get a JSON encoded array of all shortlinks.</p>
+
+<h2 id="GET-/v1/shortlink/:shortId"><span class="method justendpoint"><span class="endpoint"><span class="verb">GET</span> <span class="path">/v1/shortlink/:shortId</span></span></h2>
+
+<p>Given a shortId as a parameter, returns the corresponding URL <strong>without</strong> logging an access IP, time, and referer.</p>
+
+<h2 id="GET-/v1/shortlink/:shortId/hits"><span class="method justendpoint"><span class="endpoint"><span class="verb">GET</span> <span class="path">/v1/shortlink/:shortId/hits</span></span></h2>
+
+<p>Retrieves the hit log for the specified shortId.</p>
+
+<h2 id="POST-/v1/shortlink"><span class="method justendpoint"><span class="endpoint"><span class="verb">POST</span> <span class="path">/v1/shortlink</span></span></h2>
+
+<p>Accepts a JSON object that defines a new shortlink to be added to the database of redirects.  If a customId is provided and is not currently in the database, the shortId of the shortlink is set to that customId.  If customId is not provided, shorty generates a unique shortId.</p>
+
+<h4 id="example-request">example request</h4>
+
+<pre><code>{
+  "url": "http://example.com/foo",
+  "customId": "bar",
+  "username": "patrick"
+}
+</code></pre>
+
+<h2 id="POST-/v1/shortlink/:shortId/hits"><span class="method justendpoint"><span class="endpoint"><span class="verb">POST</span> <span class="path">/v1/shortlink/:shortId/hits</span></span></h2>
+
+<p>Appends an access log record defined by a JSON object that specifies the shortlink's shortId, as well as the client's ip address and referer.  The ip address and referer are passed on to the API by the shorty-web app.</p>
+
+<p>Also returns the URL corresponding to the shortId, or a not found error.  This URL is then used by the shorty-web app to provide a redirect.</p>
+
+<h4 id="example-request-2">example request</h4>
+
+<pre class="shell"><code>curl http://blah
+</code></pre>
+
+<h4 id="example-request-3">example request</h4>
+
+<pre><code>{
+  "ip": "192.168.0.1",
+  "referer": "http://expedia.com/"
+}
+</code></pre>
+
+<h4 id="response">response</h4>
+
+<pre><code>"http://example.com/foo"
+</code></pre>
+
+<h2 id="DELETE-/v1/shortlink/:shortId"><span class="method justendpoint"><span class="endpoint"><span class="verb">DELETE</span> <span class="path">/v1/shortlink/:shortId</span></span></h2>
+
+<p>Deletes the shortlink with the given shortId.</p>
+
+    </div>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+    var headerHeight = $("#header").height();
+
+    var sections = $("#content h1[id], #content h2[id]");
+    var sectionOffsets = [];
+    var slack = 100;  // Give the section scroll some slack (in pixels).
+    sections.each(function(elem) {
+        sectionOffsets.push($(this).offset().top - headerHeight - slack);
+    });
+
+    var currSectionIdx = -1;
+    function getSectionIdx(scrollDistance) {
+        if (scrollDistance < sectionOffsets[0]) {
+            return -1;
+        } else {
+            for (var id = sectionOffsets.length; id > 0; id--) {
+                if (scrollDistance > sectionOffsets[id - 1]) {
+                    return id - 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    /** {{{ http://code.activestate.com/recipes/577787/ (r2) */
+    _slugify_strip_re = /[^\w\s-]/g;
+    _slugify_hyphenate_re = /[-\s]+/g;
+    function slugify(s) {
+      s = s.replace(_slugify_strip_re, '').trim().toLowerCase();
+      s = s.replace(_slugify_hyphenate_re, '-');
+      return s;
+    }
+    /** end of http://code.activestate.com/recipes/577787/ }}} */
+
+    /* See <https://github.com/trentm/restdown/issues/11>. */
+    function safechars(s) {
+      return s.replace(_slugify_strip_re, '');
+    }
+
+    $("#content").scroll(function() {
+        var scrollDistance = $("#content").scrollTop();
+        var sectionIdx = getSectionIdx(scrollDistance);
+
+        if (sectionIdx !== currSectionIdx) {
+            $("#sidebar li>div").removeClass("current");
+            currSectionIdx = sectionIdx;
+            if (currSectionIdx >= 0) {
+                var heading = $(sections[currSectionIdx]).text();
+                var possibleAnchors = [
+                    slugify(heading), // h1 or non-method h2
+                    heading.replace(/ /g, '-'), // h2 method, just name or just endpoint
+                    heading.slice(0, heading.lastIndexOf(' (')).trimRight().replace(/ /g, '-'), // h2 method, name and endpoint
+                ];
+                for (var i=0; i < possibleAnchors.length; i++) {
+                    var anchor = safechars(possibleAnchors[i]);
+                    try {
+                        $("#sidebar a[href=#" + anchor + "]").parent().addClass("current");
+                    } catch (e) {
+                        /* Ignore error if no such element. */
+                        console.log(e)
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>

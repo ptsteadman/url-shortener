@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><@= title @></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+    <script src="/javascripts/jquery-1.10.2.min.js"></script>
+    <script src="/javascripts/underscore-min.js"></script>
+    <script src="/javascripts/backbone-min.js"></script>
+    <script src="/javascripts/site.js"></script>
+    <script src="/javascripts/bootstrap.min.js"></script>
+
+  </head>
+  <body>
+  	<script>
+  		var data = <@- JSON.stringify(links) @>;
+  		var domain = <@- JSON.stringify(redirectDomain) @>;
+  		var user = <@- JSON.stringify(user) @>;
+  		var message = <@- JSON.stringify(message) @>;
+  	</script>
+  	<div class="container">
+  		<div class="row">
+  			<div class="col-xs-10">
+    			<h1><strong><@= title @></strong></h1>
+    		</div>
+    		<div class="col-xs-2">
+    			<a href="v1/">API Docs</a>
+    		</div>
+    	</div>
+	    <div class="row">
+	    	<div class="col-xs-12">
+	    		<hr class='colorgraph'>
+		    	<div class="panel panel-default">
+		    		<div class="panel-heading">
+		    			<h3 class="panel-title"> <span class="glyphicon glyphicon-plus"></span> Create Shortened URL</h3>
+		    		</div>
+		    		<div class="panel-body">
+		    				<form id="url-form" class="form-horizontal" role="form">
+		    					<div class="form-group">
+		    						<div class="col-xs-8">
+		    							<input type="text" class="form-control" id="url-to-shorten" placeholder="URL to be shortened...">
+		    						</div>
+		    						<div class="col-xs-4">
+										<div class="checkbox">
+										    <label>
+										        <input type="checkbox" id="use-custom">Use Custom ShortID
+										    </label>
+										</div>
+		    						</div>
+		    					</div>
+		    					<div id="custom-id-inputs" class="form-group" style="display: none;">
+		    						<div class="col-xs-8">
+		    							<div class="input-group">
+		    								<span class="input-group-addon"><@= redirectDomain @></span>
+		    								<input type="text" class="form-control" id="custom-id" placeholder="Enter custom shortid...">
+		    							</div>
+		    						</div>
+		    						<div class="col-xs-4">
+										<p id="availability" class="form-control-static text-danger">Cannot be empty.</p>
+		    						</div>
+		    					</div>
+		    					<div class="form-group">
+									<div class="col-xs-4">
+								      	<button type="submit" class="btn btn-primary">Shorten Url</button>
+								      	<button type="button" id="clear" class="btn btn-default">Clear</button>
+								    </div>
+								</div>
+		    				</form>
+			    		</div>
+			    	</div>
+			    		<div class="alert alert-danger" style="display: none" id='error'>
+			    		</div>
+ 			    		<div class="alert alert-success" style='display: none' id='success'>
+ 			    			<strong>Shortened link created: </strong><span id="newLink"></span>
+	  					</div>
+	  					<div class="alert alert-warning" style='display: none' id='deleted'>
+ 			    			<strong>Shortened link deleted: </strong><span id="deletedLink"></span>
+	  					</div>
+	  					<div class="alert alert-warning" style='display: none' id='warning'>
+ 			    			<strong>Shortened link deleted: </strong><span id="deletedLink"></span>
+	  					</div>					    </div>
+
+			</div>
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"> <span class="glyphicon glyphicon-search"></span> Search Shortened URLs</h3>
+						</div>
+						<div class="panel-body">
+							<div class="well well-sm" id="search-form">
+								<div class="row">
+								<div class="col-xs-11">
+									<div class="input-group" >
+									      	<input type="text" id="search-form-input" class="form-control">
+									      	<div class="input-group-btn">
+									       		<button type="button" id="search-form-select" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Search By URL <span class="caret"></span></button>
+									        	<ul id="search-form-select-options" class="dropdown-menu pull-right">
+									          		<li><a data-search="url" href="#">Search By URL</a></li>
+									          		<li><a data-search="shortlink_id" href="#">Search By ShortID</a></li>
+									          		<li><a  data-search="creation_user_id" href="#">Search By User</a></li>
+									        	</ul>
+									      </div><!-- /btn-group -->
+									</div><!-- /input-group -->
+								</div>
+								<div class="col-xs-1">
+									<div class="btn-group">
+									  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+									  <span class="glyphicon glyphicon-sort"></span> <span class="caret"></span>
+									  </button>
+									  <ul id="search-form-sort-options" class="dropdown-menu" role="menu">
+									    <li><a data-sort="created_date" href="#">Sort By Date</a></li>
+									    <li><a data-sort="hits" href="#">Sort By Hits</a></li>
+									  </ul>
+									</div><!-- button group -->
+								</div>
+								</div>
+							</div><!-- /well -->
+							<div class="list-group" id="link-collection">
+								<script type="text/template" id="link-template">
+									<div style="white-space: nowrap; overflow: hidden;" class="list-group-item">
+										<button type="button" class="close" aria-hidden="true">&times;</button>
+										<h4 style="text-overflow: ellipsis; overflow: hidden;" class="list-group-item-heading"><span class="glyphicon glyphicon-link"></span> Link to: <a class="text-info" target="_blank" href="<%= url %>"><%= url %></a></h4>
+										<p style="font-size: 15px;" class="list-group-item-text"></span> Short Link: <a class="text-success" target="_blank" href="<@= redirectDomain @>/<%= shortlink_id %>"><@= redirectDomain @>/<%= shortlink_id %></a></p>
+										<% 
+										var monthNames = [ "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December" ];
+										var d = new Date(creation_date_time);
+										%>
+										<p class="list-group-item-text">Created <%= monthNames[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear() %> by <%= creation_user_id %>.</p>
+										<p class="list-group-item-text">Total Hits: <strong><%= hits || '0' %></strong> <small><a href="#" class="hits text-info"> download stats</a><small></p>
+									</div>
+								</script>
+							</div><!-- /list group -->
+						</div><!-- /panel-body -->
+					</div>
+				</div>
+			</div>
+		</div>
+  </body>
+</html>
