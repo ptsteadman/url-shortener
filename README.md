@@ -2,11 +2,9 @@
 
 ### Overview
 
-A shortlink from http://short.com/foo could redirect a visitor to http://example.com/someverylongdomainname?querystring.  This project creates a shortlink service with node.js and mysql.
-
 This URL shortener consists of two node servers:
-  - Shortener-API, which is an API for adding, removing, and viewing shortlinks.  Shortener-API also provides a GUI.
-  - Shortener-WEB, which actually performs the shortlink redirect by calling Shortener-API.
+  - **Shortener-API**, which is an API for adding, removing, and viewing shortlinks.  Shortener-API also provides a GUI.
+  - **Shortener-WEB**, which actually performs the shortlink redirect by calling Shortener-API.
 
 
          +----------------------+               +----------------+
@@ -30,6 +28,7 @@ This URL shortener consists of two node servers:
           |                   |                         |
           +-------------------+                        / \
             -----------------
+
 ## Database Setup
 
 - Install MySql, and start a mysql shell using sudo in the shorty-api directory.
@@ -64,7 +63,9 @@ The two node servers, Shortener-API and Shortener-WEB, are configured in the con
       errorRedirect: "http://www.google.com" // where the user is sent if a shortlink isn't found
     }
 
-To use the shortener, start both shortner-API and shortener-WEB with "node app.js" in each directory.  By default, shortener-API runs on http://localhost:3001 and shortener-WEB runs on http://localhost:3002.  This means that shortlinks will be in the form http://localhost:3002/shortId, and the GUI can be accessed from the browser at http://localhost:3001
+To use the shortener, start both shortner-API and shortener-WEB with "node app.js" in each directory.  
+
+By default, shortener-API runs on http://localhost:3001 and shortener-WEB runs on http://localhost:3002.  This means that shortlinks will look like http://localhost:3002/shortId, and the GUI can be accessed from the browser at http://localhost:3001
 
 ## Shortener-API Methods
 
