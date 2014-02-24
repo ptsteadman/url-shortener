@@ -1,17 +1,33 @@
 # URL Shortener (in Node.js)
 
-## Shorty URL Shortener Overview
+### Overview
 
-**shorty-web**
+This URL shortener consists of two parts:
+ - Shortener-API, which is an API for adding, removing, and viewing shortlinks
+ - Shortener-WEB, which actually performs the shortlink redirect, and calls Shortener-API
 
-The public-facing component of the URL shortener service.
-Calls the shorty-api API to get the proper redirect link.
-Host and port of the shorty-api API can be edited in config.js.
-
-**shorty-api**
-
-API and internal UI component of the shorty URL shortener.   
-
+         +----------------------+               +----------------+
+         |SHORTENER-API         |               |SHORTENER-WEB   |
+         |----------------------|               |----------------|
+         | http://internal:3000 | 2.calls API   | http://short.ly|
+         |                      <---------------+                |
+         | provides GUI for     |   "foo"       | only performs  |
+         | adding and removing  +---------------> redirects      |
+         | shortlinks, viewing  | 4. returns    |                |
+         | stats                |  "bar.com"    |                |
+         |                      |               |                |
+         +--------+--^----------+               +----^------+----+
+               3. |  | looks up shortlink            |      |
+                  |  | logs hit                      |      | 5. redirects
+            ------v--+-------                        |      | to "bar.com"
+          +-------------------+                      |      |
+          | shortener MYSQL   |     1. user requests |      |
+          |  - shortlinks     |        short.com/foo +  0   v
+          |  - shortlink_hits |                        -+-
+          |                   |                         |
+          +-------------------+                        / \
+            -----------------
+ 
 ## config.js Configuration
 
 **shorty-web**
@@ -39,7 +55,7 @@ Finally, use the command "SOURCE links.sql" to create the proper tables in MySQL
 - Create a database called "shortener" with the command "CREATE DATABASE shortener".
   (A different database name can be used by modifying 'mysqlDB' in shortener-api's config.js).
 - Finally, use the command "SOURCE links.sql" to create the proper tables in MySQL.
-  (To view the schema of these tables, you can view the links.sql file). 
+  (To view the schema of the tables being created, you can view the links.sql file). 
 
 ## Shortener-API Methods
 
