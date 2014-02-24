@@ -2,8 +2,6 @@
 
 ### Overview
 
-URL shorteners work by a server performing a redirect from (ex.) http://short.ly/shortId to a longer URL stored in a database.  
-
 Features:
   - Custom shortlinks (ex short.ly/custom instead of short.ly/123asd)
   - Logging of hits, including user ip / referrer
